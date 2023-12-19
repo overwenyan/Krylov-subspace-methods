@@ -1,6 +1,7 @@
 import numpy as np
+from scipy.io import mmread
 
-def bicgstab_solver(A, b, x0=None, tol=1e-3, max_iter=100):
+def bicgstab_solver(A, b, x0=None, tol=1e-10, max_iter=10000):
     """
     BiCGSTAB (Biconjugate Gradient Stabilized) method to solve Ax=b.
 
@@ -52,6 +53,10 @@ if __name__ == "__main__":
     # Example matrix A and vector b
     A = np.array([[4, -1, 0, 0], [-1, 4, -1, 0], [0, -1, 4, -1], [0, 0, -1, 3]])
     b = np.array([15, 10, 10, 10])
+    # file_name = 'data/can__838.mtx'
+    # A = mmread(file_name)
+    # n = A.shape[0]
+    # b = np.ones(n) / pow(n,2)
 
     # Solve Ax=b using BiCGSTAB
     x, converged, num_iterations = bicgstab_solver(A, b)

@@ -16,8 +16,11 @@ def idr_solver(A, b, x0=None, tol=1e-6, max_iter=100):
         converged (bool): True if the method converged, False otherwise.
         num_iterations (int): Number of iterations performed.
     """
+    # b = np.asarray(b).ravel()
     if x0 is None:
         x0 = np.zeros_like(b)
+        # x0 = np.asarray(x0).ravel()
+        # x0 = x0.reshape(-1,1)
 
     n = len(b)
     V = np.zeros((n, max_iter+1))
@@ -26,7 +29,10 @@ def idr_solver(A, b, x0=None, tol=1e-6, max_iter=100):
 
     x = x0.copy()
     r = b - np.dot(A, x)
+    # print(r.shape)
     beta = np.linalg.norm(r)
+    # print('beta.shape: {}'.format(beta.shape))
+    # print(V[:, 0].shape)
     V[:, 0] = r / beta
     R[:, 0] = r
 
@@ -39,9 +45,15 @@ def idr_solver(A, b, x0=None, tol=1e-6, max_iter=100):
         H[k + 1, k] = np.linalg.norm(w)
         V[:, k + 1] = w / H[k + 1, k]
         G = np.linalg.solve(H[:k+1, :k+1], beta * np.eye(k + 1))
-        x = x + np.dot(V[:, :k+1], G)
+        # print('np.dot(V[:, :k+1], G): {}'.format(np.dot(V[:, :k+1], G).shape))
+        Vk_G = np.dot(V[:, :k+1], G).flatten()
+        # print('Vk_G: {}'.format(Vk_G.shape))
+        x = x + Vk_G
+        # print(x)
+        # print('x.shape: {}'.format(x.shape))
         r = b - np.dot(A, x)
         beta = np.linalg.norm(r)
+        # print('beta: {}'.format(beta))
 
         R[:, k + 1] = r
 
