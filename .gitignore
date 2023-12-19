@@ -1,3 +1,4 @@
 ./__pycache__
-./debug1.py
-./idrs_example1.py
+debug1.py
+idrs_example1.py
+test1.ipynb
