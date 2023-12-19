@@ -4,6 +4,7 @@
 from scipy.sparse.linalg import bicg
 from scipy.sparse.linalg import bicgstab
 from scipy.sparse.linalg import gmres, cg
+from scipy.sparse.linalg import norm, inv
 from scipy.io import mmread
 
 from cg_solver import cg_solver
@@ -81,10 +82,13 @@ if __name__ == '__main__':
     mat_title = matrix_name.upper()
     file_name = folder_path + matrix_file_name
     
-    A = mmread(file_name)
+    my_matrix = mmread(file_name)
+    A = my_matrix
+    my_array = my_matrix.A
+    cond_number = np.linalg.cond(my_array)
     n = A.shape[0]
     b = np.ones(n) / pow(n,2)
-    print("Matrix name: {}, dimension: {}".format(mat_title, n))
+    print("Matrix name:  {}, dimension: {}, $\kappa(A)={:.5g}$".format(mat_title, n, cond_number))
     
     
     msg = "Method {:8} Time = {:6.3f} Matvec = {:d} Residual = {:g}"
@@ -192,3 +196,4 @@ if __name__ == '__main__':
     
     
     plot_residuals(matrix_file_name, residual_dict)
+    
