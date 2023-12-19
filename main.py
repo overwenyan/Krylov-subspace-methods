@@ -50,6 +50,9 @@ def plot_residuals(file_name, residual_dict):
     for method in residual_dict:
         # print(method)
         reses = residual_dict[method]
+        if method in ['GMRES(20)', 'GMRES(50)']:
+            print(reses[0])
+            reses = reses / reses[0]
         length = len(reses)
         # plt.plot(list(range(length)), reses, label=method)
         
@@ -93,9 +96,10 @@ if __name__ == '__main__':
     
     msg = "Method {:8} Time = {:6.3f} Matvec = {:d} Residual = {:g}"
     msg = "{:8} & {:6.3f} & {:d} & {:g} \\\\"
-    # x0 = np.zeros([n, 1])
-    x0 = np.random.randint(low=0, high=1, size=(n,1))
+    x0 = np.zeros([n, 1])
+    # x0 = np.random.randint(low=0, high=1, size=(n,1))
     bnrm2 = np.linalg.norm(b)
+    res0 = np.linalg.norm(b - A.dot(x0))
     residual_dict = {}
     
     def residual(x):
@@ -106,7 +110,9 @@ if __name__ == '__main__':
     def callback_(x):
         global matvec, residuals
         matvec = matvec + 1
-        res = residual(x)
+        # res = residual(x)
+        res = np.linalg.norm(b - A.dot(x)) / bnrm2 
+        # res = np.linalg.norm(b - A.dot(x))/bnrm2
         residuals.append(res)
 
     # CG
@@ -131,7 +137,9 @@ if __name__ == '__main__':
     elapsed_time = time.time() - t
     method_name = get_method_name(args)
     print(msg.format(method_name, elapsed_time, matvec, residual(xb2)))
-    residual_dict[method_name] = residuals
+    # print(residuals[-1])
+    # residuals = [res / np.log(res)  for res in residuals]
+    residual_dict[method_name] = residuals 
     
     # GMRES
     matvec = 0
@@ -139,10 +147,15 @@ if __name__ == '__main__':
     args.method = 'gmres'
     args.restart = 50
     t = time.time()
-    xb2, info = gmres(A, b, x0=x0, tol=args.tol, restart=args.restart, maxiter=args.maxit, callback=callback_)
+    x, info = gmres(A, b, x0=x0, tol=args.tol, restart=args.restart, maxiter=args.maxit, callback=callback_)
     elapsed_time = time.time() - t
     method_name = get_method_name(args)
-    print(msg.format(method_name, elapsed_time, matvec, residual(xb2)))
+    print(msg.format(method_name, elapsed_time, matvec, residual(x)))
+    # residual_dict[method_name] = residuals / residuals[-1] * residual(x)
+    # residuals = [res / np.log(res)  for res in residuals]
+    # for i in range(len(residuals)):
+    #     residuals[i] = residuals[i] / residuals[0]
+    # print(residuals[0])
     residual_dict[method_name] = residuals
     
     
