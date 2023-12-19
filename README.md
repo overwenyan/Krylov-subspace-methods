@@ -1,4 +1,9 @@
-# Performance of Krylov subspace methods (Final project of AMSC 763)
+# Performance of Krylov subspace methods 
+Final project of AMSC 763
+## Example
+```sh
+python main.py --matrix_name can_1054.mtx
+```
 
 ## Running results
 
